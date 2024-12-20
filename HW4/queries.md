@@ -71,8 +71,9 @@ WITH RECURSIVE t1 AS (
 	    END AS total_size
 	FROM t1
 ), t3 AS (
-	SELECT id, parent_id, name, type, path, level, total_size, SUM(total_size) OVER (PARTITION BY parent_id) AS parent_dir_size,
-		ROUND(COALESCE(total_size / NULLIF(SUM(total_size) OVER (PARTITION BY parent_id), 0), 1) * 100, 2) AS ratio
+	SELECT id, parent_id, name, type, path, level, total_size, 
+		SUM(total_size) OVER (PARTITION BY parent_id) AS parent_dir_size,
+		ROUND(total_size / NULLIF(SUM(total_size) OVER (PARTITION BY parent_id), 0) * 100, 2) AS ratio
 	FROM t2
 	ORDER BY level, parent_id, id
 )
